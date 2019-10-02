@@ -8,6 +8,7 @@ class MessagesRepository(
     private val attachmentsDao: AttachmentsDao
 ) {
 
+    fun getPagedMessages(total: Int) = messagesDao.loadPagedMessages(total)
     fun getMessages(): LiveData<List<MessageEntity>> = messagesDao.loadAllMessages()
     fun getAttachments(): LiveData<List<AttachmentEntity>> = attachmentsDao.loadAllAttachments()
 

@@ -5,7 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import com.malmstein.sample.messages.data.AttachmentEntity
 import com.malmstein.sample.messages.data.MessageEntity
 import com.malmstein.sample.messages.data.MessageModel
@@ -15,6 +18,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MessagesViewModel(private val repository: MessagesRepository) : ViewModel() {
+
+    fun loadInitialPage() = loadPagedMessages(1)
+    fun loadPagedMessages(page: Int): LiveData<List<MessageModel>> {
+
+        val messagesLiveData = repository.getPagedMessages(20 * page)
+        val attachmentsLiveData = repository.getAttachments()
+
+        val combinedMessages = MediatorLiveData<List<MessageModel>>()
+
+        combinedMessages.addSource(messagesLiveData) { value ->
+            combinedMessages.value = combineMessagesAndAttachments(messagesLiveData, attachmentsLiveData)
+        }
+        combinedMessages.addSource(attachmentsLiveData) { value ->
+            combinedMessages.value = combineMessagesAndAttachments(messagesLiveData, attachmentsLiveData)
+        }
+
+        return combinedMessages
+    }
 
     fun loadMessages(): LiveData<List<MessageModel>> {
 

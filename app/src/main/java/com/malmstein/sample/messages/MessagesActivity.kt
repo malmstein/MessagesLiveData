@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.malmstein.sample.messages.data.MessageModel
 import com.malmstein.sample.messages.view.MessagesAdapter
+import com.malmstein.sample.messages.view.MessagesPagedAdapter
 
 class MessagesActivity : AppCompatActivity() {
 
@@ -23,7 +25,7 @@ class MessagesActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
-        viewModel.loadMessages().observe(this, Observer { value ->
+        viewModel.loadInitialPage().observe(this, Observer { value ->
             value?.let { messages ->
                 renderMessages(messages)
             }

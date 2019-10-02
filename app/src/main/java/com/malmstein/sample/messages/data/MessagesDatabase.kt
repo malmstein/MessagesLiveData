@@ -3,6 +3,7 @@ package com.malmstein.sample.messages.data
 import android.content.Context
 import android.content.res.AssetManager
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -51,6 +52,12 @@ interface MessagesDao {
 
     @Query("select * from MessageEntity")
     fun loadAllMessages(): LiveData<List<MessageEntity>>
+
+    @Query("select * from MessageEntity limit :total")
+    fun loadPagedMessages(total: Int): LiveData<List<MessageEntity>>
+
+    @Query("SELECT * FROM MessageEntity")
+    fun messages(): DataSource.Factory<Int, MessageEntity>
 }
 
 @Dao
