@@ -63,7 +63,6 @@ dependencies {
     implementation deps.support.recyclerview
     implementation deps.support.design
     implementation deps.support.constraint_layout
-    implementation deps.support.paging
 
     implementation deps.androidx.core_utils
     implementation deps.androidx.core_ktx

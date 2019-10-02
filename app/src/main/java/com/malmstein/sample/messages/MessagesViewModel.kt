@@ -3,12 +3,12 @@ package com.malmstein.sample.messages
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagedList
-import androidx.paging.toLiveData
 import com.malmstein.sample.messages.data.AttachmentEntity
 import com.malmstein.sample.messages.data.MessageEntity
 import com.malmstein.sample.messages.data.MessageModel
@@ -19,27 +19,32 @@ import kotlinx.coroutines.launch
 
 class MessagesViewModel(private val repository: MessagesRepository) : ViewModel() {
 
-    fun loadInitialPage() = loadPagedMessages(1)
-    fun loadPagedMessages(page: Int): LiveData<List<MessageModel>> {
-
-        val messagesLiveData = repository.getPagedMessages(20 * page)
-        val attachmentsLiveData = repository.getAttachments()
-
-        val combinedMessages = MediatorLiveData<List<MessageModel>>()
-
-        combinedMessages.addSource(messagesLiveData) { value ->
-            combinedMessages.value = combineMessagesAndAttachments(messagesLiveData, attachmentsLiveData)
-        }
-        combinedMessages.addSource(attachmentsLiveData) { value ->
-            combinedMessages.value = combineMessagesAndAttachments(messagesLiveData, attachmentsLiveData)
-        }
-
-        return combinedMessages
+    companion object {
+        const val INITIAL_PAGE = 1
+        const val ITEMS_PER_PAGE = 20
     }
 
-    fun loadMessages(): LiveData<List<MessageModel>> {
+    private var currentPage = 0
+    private val page = MutableLiveData<Int>()
 
-        val messagesLiveData = repository.getMessages()
+    val messages: LiveData<List<MessageModel>> = Transformations.switchMap(page) {
+        currentPage -> loadNextPage(currentPage)
+    }
+
+    fun loadMessages(){
+        currentPage = INITIAL_PAGE
+        page.value = currentPage
+    }
+
+    fun loadMoreMessages(){
+        currentPage++
+        page.value = currentPage
+    }
+
+    private fun loadNextPage(page: Int): LiveData<List<MessageModel>>{
+
+        val messagesLiveData = repository.getPagedMessages(ITEMS_PER_PAGE * page)
+
         val attachmentsLiveData = repository.getAttachments()
 
         val combinedMessages = MediatorLiveData<List<MessageModel>>()
@@ -90,8 +95,6 @@ class MessagesViewModel(private val repository: MessagesRepository) : ViewModel(
         }
     }
 
-    fun loadMore() {
-    }
 }
 
 /**

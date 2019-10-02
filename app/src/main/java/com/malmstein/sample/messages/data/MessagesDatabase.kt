@@ -3,7 +3,6 @@ package com.malmstein.sample.messages.data
 import android.content.Context
 import android.content.res.AssetManager
 import androidx.lifecycle.LiveData
-import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -13,11 +12,8 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.malmstein.sample.messages.R
 import com.malmstein.sample.messages.extensions.ioThread
 import java.io.IOException
@@ -55,9 +51,6 @@ interface MessagesDao {
 
     @Query("select * from MessageEntity limit :total")
     fun loadPagedMessages(total: Int): LiveData<List<MessageEntity>>
-
-    @Query("SELECT * FROM MessageEntity")
-    fun messages(): DataSource.Factory<Int, MessageEntity>
 }
 
 @Dao
