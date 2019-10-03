@@ -39,7 +39,14 @@ sealed class MessageModel {
         }
     }
 
-    data class Attachment(val id: Long, val attachmentId: String, val userId: Long, val name: String, val linkUrl: String, val isSelf: Boolean) :
+    data class Attachment(
+        val id: Long,
+        val attachmentId: String,
+        val userId: Long,
+        val name: String,
+        val linkUrl: String,
+        val isSelf: Boolean
+    ) :
         MessageModel() {
         companion object {
             fun from(id: Long, attachmentEntity: AttachmentEntity, messageEntity: MessageEntity) =

@@ -9,7 +9,6 @@ class MessagesRepository(
 ) {
 
     fun getPagedMessages(total: Int) = messagesDao.loadPagedMessages(total)
-    fun getMessages(): LiveData<List<MessageEntity>> = messagesDao.loadAllMessages()
     fun getAttachments(): LiveData<List<AttachmentEntity>> = attachmentsDao.loadAllAttachments()
 
     suspend fun deleteMessage(message: Long) = coroutineScope {

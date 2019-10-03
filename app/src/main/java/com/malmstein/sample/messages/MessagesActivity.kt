@@ -44,7 +44,7 @@ class MessagesActivity : AppCompatActivity() {
         messagesList.adapter = adapter
         messagesList.layoutManager = layoutManager
 
-        messagesList.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        messagesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
@@ -55,14 +55,11 @@ class MessagesActivity : AppCompatActivity() {
                     isLoading = true
                 }
             }
-
         })
     }
 
     private fun renderMessages(messages: List<MessageModel>) {
         isLoading = false
-        if (messages.isNotEmpty()){
-            adapter.notifyChanges(messages)
-        }
+        adapter.notifyChanges(messages)
     }
 }

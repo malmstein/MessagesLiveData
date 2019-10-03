@@ -44,7 +44,6 @@ class MessagesViewModel(private val repository: MessagesRepository) : ViewModel(
     private fun loadNextPage(page: Int): LiveData<List<MessageModel>>{
 
         val messagesLiveData = repository.getPagedMessages(ITEMS_PER_PAGE * page)
-
         val attachmentsLiveData = repository.getAttachments()
 
         val combinedMessages = MediatorLiveData<List<MessageModel>>()

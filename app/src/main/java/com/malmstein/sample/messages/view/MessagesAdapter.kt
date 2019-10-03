@@ -92,11 +92,13 @@ class MessagesAdapter(private val viewModel: MessagesViewModel) : RecyclerView.A
     }
 
     fun notifyChanges(newList: List<MessageModel>) {
-        val diffCallback = MessageDiffCallback(messages, newList)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        messages.clear()
-        messages.addAll(newList)
-        diffResult.dispatchUpdatesTo(this)
+        if (newList.isNotEmpty()) {
+            val diffCallback = MessageDiffCallback(messages, newList)
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
+            messages.clear()
+            messages.addAll(newList)
+            diffResult.dispatchUpdatesTo(this)
+        }
     }
 }
 

@@ -19,7 +19,13 @@ import com.malmstein.sample.messages.extensions.ioThread
 import java.io.IOException
 
 @Entity
-data class AttachmentEntity(@PrimaryKey val id: String, val messageId: Long, val name: String, val url: String, val thumbnailUrl: String) {
+data class AttachmentEntity(
+    @PrimaryKey val id: String,
+    val messageId: Long,
+    val name: String,
+    val url: String,
+    val thumbnailUrl: String
+) {
     companion object {
         fun from(attachmentJSON: AttachmentJSON, messageId: Long): AttachmentEntity {
             return AttachmentEntity(attachmentJSON.id, messageId, attachmentJSON.title, attachmentJSON.url, attachmentJSON.thumbnailUrl)
@@ -45,9 +51,6 @@ interface MessagesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(messages: List<MessageEntity>)
-
-    @Query("select * from MessageEntity")
-    fun loadAllMessages(): LiveData<List<MessageEntity>>
 
     @Query("select * from MessageEntity limit :total")
     fun loadPagedMessages(total: Int): LiveData<List<MessageEntity>>
@@ -116,12 +119,25 @@ private fun prepopulateDb(context: Context, database: MessageDatabase) {
                     MessageEntity(it.id, it.content, 1, context.getString(R.string.message_self_me), "", true)
                 }
             }
-
             database.messageDao.insertAll(messages)
             database.attachmentsDao.insertAll(attachments)
         }
     } catch (e: Exception) {
         e.printStackTrace()
+    }
+}
+
+fun loadJSONFromAssets(assetManager: AssetManager): String {
+    return try {
+        val inputStream = assetManager.open("data.json")
+        val size = inputStream.available()
+        val buffer = ByteArray(size)
+        inputStream.read(buffer)
+        inputStream.close()
+        String(buffer)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        ""
     }
 }
 
@@ -141,16 +157,3 @@ private fun findUserName(userId: Long, users: List<UserJSON>): UserJSON? {
     }
 }
 
-fun loadJSONFromAssets(assetManager: AssetManager): String {
-    return try {
-        val inputStream = assetManager.open("data.json")
-        val size = inputStream.available()
-        val buffer = ByteArray(size)
-        inputStream.read(buffer)
-        inputStream.close()
-        String(buffer)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        ""
-    }
-}
